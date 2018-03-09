@@ -14,7 +14,7 @@ from .util import validate_data, device_is_emotiv, hid_enumerate, print_hid_enum
 if system_platform == "Windows":
     import pywinusb.hid as hid
 else:
-    import hidapi
+    import pyhidapi as hidapi
 
 
 class EmotivReader(object):

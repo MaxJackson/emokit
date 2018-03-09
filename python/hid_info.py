@@ -8,7 +8,7 @@ system_platform = platform.system()
 if system_platform == "Windows":
     import pywinusb.hid as hidapi
 else:
-    import hidapi
+    import pyhidapi as hidapi
 
     hidapi.hid_init()
 
