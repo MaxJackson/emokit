@@ -35,13 +35,13 @@ def random_key(serial_number):
     emotiv_key_possiblities = ['\0', 'H', 'T', '\x10', 'B', 'P']
     keyset.extend(emotiv_key_possiblities)
     k = [random.choice(keyset) for value in range(0, 16)]
-    return AES.new(''.join(k), AES.MODE_ECB, iv), k
+    return AES.new(''.join(k), AES.MODE_ECB), k
 
 
 def next_key(charset, previous_key):
     k = [random.choice(charset) for value in range(0, 16)]
 
-    return AES.new(''.join(k), AES.MODE_ECB, iv), k
+    return AES.new(''.join(k), AES.MODE_ECB), k
 
 
 # Make new crypto function match found key.
@@ -52,7 +52,7 @@ def next_key(charset, previous_key):
 def test_key():
     return AES.new(''.join(['4', '\x00', '7', '\x15', '8', '\x00', '1', '\x0C', '8', '\x00', '7', 'D', '4', '\x00',
                             '7', 'X']),
-                   AES.MODE_ECB, iv)
+                   AES.MODE_ECB)
 
 
 def new_crypto_key(serial_number, verbose=False):
@@ -79,7 +79,7 @@ def new_crypto_key(serial_number, verbose=False):
         print("EmotivCrypto: Generated Crypto Key from Serial Number...\n"
               "   Serial Number - {serial_number} \n"
               "   AES KEY - {aes_key}".format(serial_number=serial_number, aes_key=k))
-    return AES.new(''.join(k), AES.MODE_ECB, iv), k
+    return AES.new(''.join(k), AES.MODE_ECB), k
 
 
 def original_key(serial_number, is_research):
@@ -144,7 +144,7 @@ def reversed_original_key(serial_number, is_research):
     k[14] = serial_number[-4]
     k[15] = 'P'
     k.reverse()
-    return AES.new(''.join(k), AES.MODE_ECB, iv), k
+    return AES.new(''.join(k), AES.MODE_ECB), k
 
 
 data_ouput = "{0:^4} {1:^4} {2:^4} {3:^4} {4:^4} {5:^4} {6:^4} {7:^4} {8:^4} {9:^4} {10:^4} {11:^4} {12:^4} {13:^4} " \
@@ -228,7 +228,7 @@ with open('{}'.format(filename), 'r') as encrypted_data:
 
 
 def check_key(next_check):
-    new_cipher = AES.new(''.join(next_check), AES.MODE_ECB, iv)
+    new_cipher = AES.new(''.join(next_check), AES.MODE_ECB)
     if counter_check(file_data, new_cipher):
         print("Correct Key Found! {}".format(next_check))
     sys.exit()
