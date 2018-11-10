@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import socket
 from threading import Thread, Lock
 
 from .packet import EmotivExtraPacket
@@ -57,6 +58,11 @@ class EmotivOutput(object):
         battery = 0
         last_sensors = sensors_mapping.copy()
         self.lock.acquire()
+        host = '127.0.0.1'
+        port = 10002
+         
+        mySocket = socket.socket()
+        mySocket.connect((host,port))
         while self.running:
             self.lock.release()
             while not self.tasks.empty():
@@ -89,7 +95,7 @@ class EmotivOutput(object):
                         # TODO: Figure out why battery is None, probably just because the counter
                         #  hasn't rolled to the battery counter yet. except for new devices apparently.
                         battery = 0
-                    print(output_template.format(
+                    message = (output_template.format(
                         serial_number=self.serial_number,
                         f3_value=last_sensors['F3']['value'],
                         fc5_value=last_sensors['FC5']['value'],
@@ -157,6 +163,9 @@ class EmotivOutput(object):
                         processed=str(self.packets_processed),
                         old_model=self.old_model
                     ))
+                    print(message)
+                    to_send = str(last_sensors['F3']['value'])
+                    mySocket.send(to_send.encode())
                     dirty = False
             self.lock.acquire()
             if self._stop_signal:
@@ -167,7 +176,7 @@ class EmotivOutput(object):
 
 
 output_template = """
-Emokit - v0.0.8 SN: {serial_number}  Old Model: {old_model}
+Emokit - v0.0.8.1 SN: {serial_number}  Old Model: {old_model}
 +========================================================+
 | Sensor |   Value  | Quality  | Quality L1 | Quality L2 |
 +--------+----------+----------+------------+------------+
